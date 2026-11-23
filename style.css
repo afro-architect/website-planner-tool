@@ -173,9 +173,6 @@
   .title-slot .piece.img{border:none;aspect-ratio:auto;height:130px;width:auto;max-width:100%;background:transparent}
   .title-slot .piece.img img{height:100%;width:auto;max-width:100%}
   .title-slot .piece.txt{border:none;background:transparent;font-size:clamp(40px,6vw,68px);text-align:center;line-height:1;-webkit-text-stroke:1px var(--ink);color:#fff;text-shadow:3px 3px 0 var(--ink)}
-  .tagline-slot{min-width:min(100%,360px);min-height:34px;padding:4px 12px;border:2px dashed transparent;border-radius:8px}
-  .tagline-slot.empty{border-color:#9A9AA3;background:rgba(255,255,255,.85)}
-  .tagline-slot .piece.txt{font-size:20px}
   .footer-box .slot{min-width:min(100%,340px);min-height:70px}
   .footer-box .hint{color:#C9C9D1}
   .footer-box .piece.txt{background:transparent;border:none;color:#fff;font-size:44px;text-align:center}
@@ -188,7 +185,7 @@
   .cap.empty{display:none}
   .cap:hover, .cap:focus-within, .cap:has(.selected){border-color:rgba(47,111,181,.6)}
   .cap .piece.txt{color:var(--theme-ink,var(--ink));text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 4px #fff,0 0 6px #fff}
-  .cap .piece.txt, .tagline-slot .piece.txt{border:none;background:transparent;padding:2px 0}
+  .cap .piece.txt{border:none;background:transparent;padding:2px 0}
   .cap .piece.txt.h{font-size:22px}
   .cap .piece.txt.p{font-size:16px}
   .cap.placed{left:calc(var(--pad,0px) + (100% - 2 * var(--pad,0px)) * var(--xf));top:calc(var(--pad,0px) + (var(--bh,100%) - 2 * var(--pad,0px)) * var(--yf));right:auto;bottom:auto}
@@ -293,7 +290,6 @@
   .names input:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px #B9D3F0}
   .comic .piece.txt.h, .comic .piece.txt.s{font-family:var(--theme-fh,var(--comic))}
   .comic .piece.txt.p, .comic .piece.txt.ul, .comic .piece.txt.ol{font-family:var(--theme-fp,var(--hand))}
-  .comic .tagline-slot .piece.txt{color:var(--theme-ink,var(--ink))}
   .comic .piece.txt.b{background:var(--theme-accent,var(--blue)) !important;border-color:var(--theme-accent,var(--blue)) !important}
   .comic .piece.txt.a{color:var(--theme-accent,var(--blue)) !important}
   .style-row{display:flex;flex-direction:column;gap:8px}
