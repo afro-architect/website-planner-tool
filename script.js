@@ -10,7 +10,6 @@ var STARTER_WORDS = [];
 /* every drop space: what it holds and what it is called */
 var SLOTS = {
   title:{accept:'any', hint:'Title: drop a heading or drawing'},
-  tagline:{accept:'text', hint:'Drop a sentence'},
   cover:{accept:'img', hint:'Cover picture'}, coverCap:{accept:'text', hint:'Words'},
   end:{accept:'any', hint:'The end: drop words or a drawing'}
 };
@@ -525,7 +524,7 @@ function artBox(imgId, capId, extraCls, tag, n) {
   return box;
 }
 
-function render() { hidden = hidden.filter(function (h) { return CARDS.some(function (c) { return c.id === h; }); }); Object.keys(placed).forEach(function (k) { if (!piece(placed[k])) delete placed[k]; }); renderComic(); renderTrays(); renderCode(); save(); }
+function render() { delete placed.tagline; hidden = hidden.filter(function (h) { return CARDS.some(function (c) { return c.id === h; }); }); Object.keys(placed).forEach(function (k) { if (!piece(placed[k])) delete placed[k]; }); renderComic(); renderTrays(); renderCode(); save(); }
 /* a placeholder never spills out of its box: if it is too tall, it gets narrower */
 function fitMedia() {
   document.querySelectorAll('#comic .cap.media').forEach(function (cap) {
@@ -543,7 +542,7 @@ function renderComic() {
   });
   comic.dataset.key = 'container';
   var head = el('div', 'box masthead'); head.dataset.key = 'header';
-  head.appendChild(makeSlot('title', 'title-slot')); head.appendChild(makeSlot('tagline', 'tagline-slot')); chips(head, 'header', 'header');
+  head.appendChild(makeSlot('title', 'title-slot')); chips(head, 'header', 'header');
   comic.appendChild(head);
   comic.appendChild(artBox('cover', 'coverCap', 'cover', 'section'));
   var grid = el('div', 'panels'); grid.dataset.key = 'row';
@@ -748,7 +747,7 @@ function buildHTML() {
       } else ps += group('p' + q, 2, put('p' + q, 3) + capsUsed('p' + q).map(function (id) { return put(id, 3); }).join(''), '(' + (FR[z.c] || z.c + '/12') + ' wide, ' + hLabel(z.r) + ' tall)');
     }
     setHTML(group('container', 0,
-      group('header', 1, put('title', 2, true) + put('tagline', 2)) +
+      group('header', 1, put('title', 2, true)) +
       group('section', 1, put('cover', 2) + capsUsed('cover').map(function (id) { return put(id, 2); }).join('')) +
       group('row', 1, ps) +
       group('footer', 1, put('end', 2))));
@@ -768,7 +767,7 @@ function buildHTML() {
     }
     setHTML(L(0, T('\x3Cbody>')) + K('container',
       L(1, D('container') + T('>')) +
-      K('header', L(2, D('header') + idAttr('header') + T('>')) + item('title', 3, 'h1') + item('tagline', 3, 'h2') + L(2, T('</div>'))) +
+      K('header', L(2, D('header') + idAttr('header') + T('>')) + item('title', 3, 'h1') + L(2, T('</div>'))) +
       K('section', L(2, D('section') + idAttr('section') + T('>')) + item('cover', 3) + capsCode('cover', 3, 'h2', item) + L(2, T('</div>'))) +
       K('row', L(2, D('row') + T('>')) + panels + L(2, T('</div>'))) +
       K('footer', L(2, D('footer') + idAttr('footer') + T('>')) + item('end', 3, 'h2') + L(2, T('</div>'))) +
@@ -787,7 +786,7 @@ function buildHTML() {
   }
   setHTML(K('container',
     L(0, T('\x3Cbody>')) +
-    K('header', L(1, T('\x3Cheader') + idAttr('header') + T('>')) + item('title', 2, 'h1') + item('tagline', 2, 'h2') + L(1, T('\x3C/header>'))) +
+    K('header', L(1, T('\x3Cheader') + idAttr('header') + T('>')) + item('title', 2, 'h1') + L(1, T('\x3C/header>'))) +
     K('section', L(1, T('<section') + idAttr('section') + T('>')) + item('cover', 2) + capsCode('cover', 2, 'h2', item) + L(1, T('</section>'))) +
     K('row', L(1, T('<main>')) + figs + L(1, T('</main>'))) +
     K('footer', L(1, T('<footer') + idAttr('footer') + T('>')) + item('end', 2, 'h2') + L(1, T('</footer>'))) +
@@ -2152,8 +2151,8 @@ function exportHTML() {
         return x;
       })()
     + '</style>\n\x3C/head>\n\x3Cbody>\n<div class="' + c('container') + '">\n';
-  var t = at('title'), tl = at('tagline');
-  h += '<div class="' + c('header') + '">' + (t ? (t.type === 'img' ? img(t) : words(t, 'h1')) : '') + (tl ? (tl.type === 'img' ? img(tl) : words(tl, 'h2')) : '') + '</div>\n';
+  var t = at('title');
+  h += '<div class="' + c('header') + '">' + (t ? (t.type === 'img' ? img(t) : words(t, 'h1')) : '') + '</div>\n';
   var cv = at('cover');
   if (cv || capsUsed('cover').length) h += '<div class="' + c('section') + '">' + (cv ? img(cv, 'cover') : '') + capIds('cover').map(function (id) { return wordBox(id, true); }).join('') + '</div>\n';
   h += '<div class="' + c('row') + '">\n';
