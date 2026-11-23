@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bangers&family=Comic+Neue:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="bootMsg" style="display:block;margin:16px;padding:14px 16px;border:3px solid #C0392B;border-radius:10px;background:#FBEAEA;color:#1A1A1F;font:16px/1.5 Arial,sans-serif"><b>Starting&#x2026;</b> If this message doesn&#x2019;t go away, the page&#x2019;s code isn&#x2019;t running. In CodeHS, try opening the output in its own tab (the &#x2197; button), or use the 3-file version.</div>
+<noscript><div style="margin:16px;padding:14px 16px;border:3px solid #C0392B;border-radius:10px;background:#FBEAEA;font:16px/1.5 Arial,sans-serif">This page needs JavaScript turned on.</div></noscript>
+<div class="app" id="app">
+  <aside class="side">
+    <h1 class="app-title">Website Planner</h1>
+    <div class="modes" id="modeSwitch" role="tablist" aria-label="What are you doing?" hidden>
+      <button class="mode" role="tab" data-mode="build" aria-selected="true">Build</button>
+      <button class="mode" role="tab" data-mode="reflect" aria-selected="false">Reflect</button>
+      <button class="mode" role="tab" data-mode="flow" aria-selected="false">User flow</button>
+    </div>
+    <div class="build-side" id="buildSide">
+    <div class="undo-row"><button class="btn quiet" id="undoBtn" data-undo title="Undo (Ctrl+Z)" disabled><span aria-hidden="true">&#x21B6;</span> Undo</button><button class="btn quiet" id="redoBtn" data-redo title="Redo (Ctrl+Shift+Z)" disabled>Redo <span aria-hidden="true">&#x21B7;</span></button></div>
+    <p class="help">Drag a piece into a box, or tap a piece and then a box. Drop words anywhere on a picture and drag them to move. Tap words on your comic to line them up. Tap a picture on your page to make it cover its box, move it, or turn it into a background. Shift-click pieces in one box to move them together. Use Resize to change a panel.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabDraw" aria-selected="true" aria-controls="trayDraw">Drawings</button>
+      <button class="tab" role="tab" id="tabWords" aria-selected="false" aria-controls="wordsPanel">Words</button>
+    </div>
+    <div class="tray drawings" id="trayDraw" role="tabpanel" aria-label="My drawings"></div>
+    <div id="wordsPanel" role="tabpanel" hidden style="display:flex;flex-direction:column;gap:10px">
+      <div class="maker">
+        <label for="wordInput" id="wordLabel">Write new words</label>
+        <input id="wordInput" type="text" maxlength="120" placeholder="Meanwhile...">
+        <div class="url-row" id="listRow" hidden><textarea id="listInput" rows="5" aria-describedby="listHint" spellcheck="true"></textarea><span class="list-hint" id="listHint">One item per line.</span></div>
+        <div class="row" id="newRow">
+          <button class="btn" id="makeH">Make heading</button>
+          <button class="btn" id="makeS" hidden>Make subheading</button>
+          <button class="btn" id="makeP">Make sentence</button>
+          <button class="btn" id="makeB">Make button</button>
+          <button class="btn" id="makeA">Make link</button>
+          <button class="btn" id="makeL" hidden>Make list</button>
+        </div>
+        <div class="row ph-row" id="phRow" hidden><span style="font-size:14px;font-weight:700;align-self:center">Placeholder text:</span><button class="btn quiet" data-ph-text="h">Heading</button><button class="btn quiet" data-ph-text="p">Paragraph</button><button class="btn quiet" data-ph-text="ul">List</button></div>
+        <div id="editRow" hidden style="display:flex;flex-direction:column;gap:8px">
+          <div class="seg" role="group" aria-label="Line up the words">
+            <button data-align="left" aria-pressed="false"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M1 2h16M1 7h10M1 12h13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Left</button>
+            <button data-align="center" aria-pressed="false"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M1 2h16M4 7h10M2.5 12h13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Center</button>
+            <button data-align="right" aria-pressed="false"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M1 2h16M7 7h10M4 12h13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Right</button>
+          </div>
+          <label class="kind-row" id="goRow" hidden>When clicked, go to <select id="goSel" aria-label="When clicked, go to"></select></label>
+          <button class="btn quiet" id="tryGo" hidden>Try it</button>
+          <div class="url-row" id="urlRow" hidden><label for="urlInput" style="font-weight:700;font-size:15px">Link goes to</label><input id="urlInput" type="text" maxlength="200" placeholder="https://example.com or about.html" spellcheck="false" autocomplete="off"></div>
+          <div class="style-row" id="wordStyleRow" hidden>
+            <label class="kind-row">Size <select id="sizeSel" aria-label="Size for these words"></select></label>
+            <label class="kind-row">Lines <select id="linesSel" aria-label="Space between wrapped lines"></select></label>
+            <label class="kind-row" id="startRow">Start <select id="startSel" aria-label="Numbers start at"></select></label>
+            <label class="kind-row" id="gapRow">Items <select id="gapSel" aria-label="Space between list items"></select></label>
+            <label class="kind-row">Font <select id="fontSel" aria-label="Font for these words"></select></label>
+            <div class="kind-row">Color <span class="swatches" id="colorSw" role="group" aria-label="Color for these words"></span></div>
+          </div>
+          <label class="kind-row">Make it a
+            <select id="kindSel"><option value="h">heading</option><option value="s" data-sub>subheading</option><option value="p">sentence</option><option value="b">button</option><option value="a">link</option><option value="ul" data-list>bullet list</option><option value="ol" data-list>numbered list</option><option value="nav" data-list>nav bar</option></select>
+          </label>
+          <div class="row">
+            <button class="btn quiet" id="delWord">Delete</button>
+            <button class="btn" id="doneWord">Done</button>
+          </div>
+        </div>
+      </div>
+      <div class="tray words" id="trayWords" aria-label="My words"></div>
+    </div>
+    <div class="tools">
+      <button class="tab style-btn" id="fullBtn" title="Open the planner full screen">&#x2922; Full screen</button>
+      <label class="sizes-pick">Code uses
+        <select id="codeStyle"><option value="pseudo">simple steps</option><option value="tags">tag names</option><option value="div">div classes</option></select>
+      </label>
+      <label class="sizes-pick">Panel sizes in
+        <select id="notation"><option value="frac">fractions</option><option value="pct">percent</option><option value="col">columns</option></select>
+      </label>
+      <label class="sizes-pick" id="alsoRow" hidden>Also show
+        <select id="alsoShow"><option value="tags">tag names</option><option value="div">div classes</option><option value="none">nothing</option></select>
+      </label>
+      <button class="btn quiet" id="namesBtn" hidden>Rename classes</button>
+      <label class="sizes-pick snap-pick"><input type="checkbox" id="snapChk" checked> Snap: line pieces up with the grid, the center, and each other</label>
+      <button class="tab style-btn" id="styleBtn" hidden>Page style: fonts and colors</button>
+      <div class="right-row" style="justify-content:flex-start">
+        <button class="btn" id="tagsBtn" aria-pressed="false">Show tags</button>
+        <button class="btn" id="codeBtn" aria-pressed="false">Show my code</button>
+      </div>
+      <input class="file" type="file" id="file" accept="image/*" multiple>
+      <div class="save-row"><button class="btn quiet" id="saveWork" title="Download index.html. You can open it again later.">&#x2B07; Save my work</button><button class="btn quiet" id="openWork" title="Open an index.html you saved before">&#x2B06; Open my work</button><input class="file" type="file" id="openFile" accept=".html,text/html"></div>
+      <div class="right-row">
+        <button class="btn quiet" id="clearBtn" style="margin-right:auto">Clear page</button>
+        <button class="btn send" id="sendBtn">Share with my teacher</button>
+      </div>
+    </div>
+    </div>
+    <div class="ux-panel" id="reflectPanel" hidden></div>
+    <div class="ux-panel" id="flowPanel" hidden></div>
+  </aside>
+
+  <div class="stage" id="stage">
+  <div class="print-sheet print-head" id="printHead" aria-hidden="true"></div>
+  <main class="browser">
+    <div class="chrome" aria-hidden="true">
+      <div class="lights"><span></span><span></span><span></span></div>
+      <div class="address">website-planner.html</div>
+    </div>
+    <div class="comic" id="comic"></div>
+  </main>
+  <div class="splitter" id="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="ide" aria-label="Slide to show more comic or more code. Arrow keys move it." aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
+    <div class="grip"><button id="moreCode" aria-label="Show more code" title="Show more code">&#x25C0;</button><span class="dots" aria-hidden="true">&#x22EE;</span><button id="moreComic" aria-label="Show more comic" title="Show more comic">&#x25B6;</button></div>
+  </div>
+  <aside class="ide" id="ide" aria-label="Code editor">
+    <div class="ide-bar"><div class="ide-tabs" role="tablist" aria-label="Files"><button class="ide-tab" role="tab" id="tabHtml" data-file="html" aria-selected="true">index.html</button><button class="ide-tab" role="tab" id="tabCss" data-file="css" aria-selected="false">style.css</button></div><button class="ide-close" id="ideClose" aria-label="Hide my code">&#x2715;</button></div>
+    <div class="code" id="code" tabindex="0" aria-label="My code. Use the up and down arrows to read each line." aria-describedby="ideFoot"></div>
+    <div class="ide-foot" id="ideFoot" aria-live="polite">Point at your comic or at a line of code to learn what it does.</div>
+  </aside>
+  </div>
+</div>
+<div class="modal" id="sizeModal" role="dialog" aria-modal="true" aria-labelledby="sizeTitle">
+  <div class="modal-box">
+    <h2 id="sizeTitle">Panel size</h2>
+    <h3 id="wHead">Width</h3>
+    <div class="preview-bar" aria-hidden="true"><span id="wBar"></span></div>
+    <div class="choices" id="wChoices" role="group" aria-labelledby="wHead"></div>
+    <h3 id="hHead">Height</h3>
+    <div class="choices" id="hChoices" role="group" aria-labelledby="hHead"></div>
+    <h3 id="padHead">Padding: space inside the edge</h3>
+    <div class="box-style" id="padChoices" role="group" aria-labelledby="padHead"></div>
+    <h3 id="boxHead">Picture and background</h3>
+    <div class="box-style" id="boxStyle"></div>
+    <h3 id="cHead" class="nest-only" hidden>Cards inside this panel</h3>
+    <div class="nest-only split-choices" id="cChoices" role="group" aria-labelledby="cHead" hidden></div>
+    <div class="modal-foot" style="justify-content:space-between"><button class="btn quiet danger" id="removePanel">Remove this panel</button><button class="btn" id="sizeDone">Done</button></div>
+  </div>
+</div>
+<div class="modal" id="sendModal" role="dialog" aria-modal="true" aria-labelledby="sendTitle">
+  <div class="modal-box">
+    <h2 id="sendTitle">Share your work with your teacher</h2>
+    <div class="name-row"><label for="sendName" style="font-weight:700">Your name</label><input id="sendName" type="text" maxlength="40" autocomplete="name"></div>
+    <p class="small help" style="margin:0">Your work is saved in this browser, so your teacher can&#x2019;t see it in CodeHS. Share it one of these ways.</p>
+    <div class="os-pick" role="group" aria-label="Which computer are you using?"><span>I&#x2019;m using a:</span><button class="btn quiet" data-os="cros" aria-pressed="true">Chromebook</button><button class="btn quiet" data-os="mac" aria-pressed="false">Mac</button></div>
+    <div class="share-opt">
+      <h3>1. Turn in a PDF on Google Classroom <span class="tag-rec">Best</span></h3>
+      <label class="kind-row cp-row2" for="checkpoint">Checkpoint <select id="checkpoint"><option value="">Choose one</option><option>Checkpoint 1: Reflect</option><option>Checkpoint 2: Build</option><option>Checkpoint 3: User flow</option><option>Checkpoint 4: Tags</option><option>Checkpoint 5: Code</option></select></label>
+      <div class="acts"><button class="btn send" id="makePdf">Make a PDF</button></div>
+      <ol class="mini" data-for="cros">
+        <li>Click <b>Make a PDF</b>. A print window opens.</li>
+        <li>Next to <b>Destination</b>, choose <b>Save as PDF</b>, then click <b>Save</b>. It goes to your <b>Downloads</b> folder.</li>
+        <li>Open <b>Google Classroom</b> and click the assignment.</li>
+        <li>Under <b>Your work</b>, click <b>+ Add or create</b>, then <b>File</b>, and upload the PDF from <b>Downloads</b>.</li>
+        <li>Click <b>Turn in</b>.</li>
+      </ol>
+      <ol class="mini" data-for="mac" hidden>
+        <li>Click <b>Make a PDF</b>. A print window opens.</li>
+        <li>In <b>Chrome</b>: next to <b>Destination</b>, choose <b>Save as PDF</b>, then click <b>Save</b>. In <b>Safari</b>: click the <b>PDF</b> menu at the bottom left and choose <b>Save as PDF</b>. Save it to your <b>Downloads</b> folder.</li>
+        <li>Open <b>Google Classroom</b> and click the assignment.</li>
+        <li>Under <b>Your work</b>, click <b>+ Add or create</b>, then <b>File</b>, and upload the PDF from <b>Downloads</b>.</li>
+        <li>Click <b>Turn in</b>.</li>
+      </ol>
+      <p class="small">The PDF shows the checkpoint, your name, your page, your Reflect and User flow answers, and your code. At the User flow checkpoint it shows your arrows, and at the Tags checkpoint it shows your tags. Type your name and pick the checkpoint first.</p>
+      <details class="share-more">
+        <summary>If Make a PDF doesn&#x2019;t work, take screenshots instead</summary>
+        <ol class="mini" data-for="cros">
+          <li>Click <b>Full screen</b> first so your whole page shows.</li>
+          <li>Press <kbd>Ctrl</kbd> + <kbd>Show windows</kbd> (the key with boxes, above 6) to capture the screen. Or press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Show windows</kbd> and drag to capture one part.</li>
+          <li>Scroll down and take more screenshots until your whole page is captured. Open <b>Show my code</b> and take one more.</li>
+          <li>Your screenshots go to your <b>Downloads</b> folder. In <b>Google Classroom</b>, open the assignment, click <b>+ Add or create</b>, then <b>File</b>, add your screenshots, and click <b>Turn in</b>.</li>
+        </ol>
+        <ol class="mini" data-for="mac" hidden>
+          <li>Click <b>Full screen</b> first so your whole page shows.</li>
+          <li>Press <kbd>&#x2318; Command</kbd> + <kbd>Shift</kbd> + <kbd>3</kbd> to capture the whole screen. Or press <kbd>&#x2318; Command</kbd> + <kbd>Shift</kbd> + <kbd>4</kbd> and drag to capture one part.</li>
+          <li>Scroll down and take more screenshots until your whole page is captured. Open <b>Show my code</b> and take one more.</li>
+          <li>Your screenshots go to your <b>Desktop</b>. In <b>Google Classroom</b>, open the assignment, click <b>+ Add or create</b>, then <b>File</b>, add your screenshots from the Desktop, and click <b>Turn in</b>.</li>
+        </ol>
+        <p class="small">Tip: to show your User flow arrows, switch to User flow and take a screenshot there too.</p>
+      </details>
+    </div>
+    <div class="share-opt">
+      <h3>2. Turn in your index.html file on Google Classroom</h3>
+      <div class="acts"><button class="btn" id="dlComic">Download my index.html file</button></div>
+      <p class="small" id="dlNote">It keeps your pictures, words, sizes, and code.</p>
+      <ol class="mini">
+        <li>Click <b>Download my index.html file</b>. It goes to your <b>Downloads</b> folder.</li>
+        <li>Open <b>Google Classroom</b> and click the assignment.</li>
+        <li>Under <b>Your work</b>, click <b>+ Add or create</b>, then <b>File</b>, and upload <b>index.html</b> from <b>Downloads</b>.</li>
+        <li>Click <b>Turn in</b>.</li>
+      </ol>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between"><button class="btn quiet" id="copyCode">Copy my code</button><button class="btn" id="sendDone">Done</button></div>
+  </div>
+</div>
+<div class="print-sheet" id="printSheet" aria-hidden="true"></div>
+<div class="modal" id="themeModal" role="dialog" aria-modal="true" aria-labelledby="themeTitle">
+  <div class="modal-box">
+    <h2 id="themeTitle">Page style</h2>
+    <p class="help" style="margin:0">These change the whole page. Words you styled one at a time keep their own font and color.</p>
+    <div class="theme-grid">
+      <label class="kind-row">Heading font <select id="thFontH"></select></label>
+      <label class="kind-row">Text font <select id="thFontP"></select></label>
+      <h3 id="thInkL">Words color</h3><span class="swatches" id="thInk" role="group" aria-labelledby="thInkL"></span>
+      <h3 id="thBgL">Backgrounds</h3>
+      <label class="kind-row">Area <select id="bgArea" aria-describedby="thBgL"></select></label>
+      <span class="swatches" id="thBg" role="group" aria-label="Background color for this area"></span>
+      <label class="kind-row">Picture <select id="bgImg"></select></label>
+      <label class="kind-row" id="bgFitRow">Picture fit <select id="bgFit"><option value="cover">cover the whole area</option><option value="contain">fit inside</option><option value="repeat">repeat like tiles</option></select></label>
+      <h3 id="thAccL">Buttons and links color</h3><span class="swatches" id="thAccent" role="group" aria-labelledby="thAccL"></span>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between"><button class="btn quiet" id="themeReset">Back to the start</button><button class="btn" id="themeDone">Done</button></div>
+  </div>
+</div>
+<div class="modal" id="namesModal" role="dialog" aria-modal="true" aria-labelledby="namesTitle">
+  <div class="modal-box">
+    <h2 id="namesTitle">Rename classes</h2>
+    <p class="help" style="margin:0">Class names can use letters, numbers, and dashes. No spaces.</p>
+    <div class="names" id="namesList"></div>
+    <div class="modal-foot"><button class="btn quiet" id="namesReset">Use the starting names</button><button class="btn" id="namesDone">Done</button></div>
+  </div>
+</div>
+<div class="fmt-bar" id="fmtBar" role="toolbar" aria-label="Change the selected words" hidden><span class="fmt-label" id="fmtLabel"></span><div class="fmt-slot" id="fmtSlot"></div><button class="btn" data-fmt-done>Done</button></div>
+<div class="status" id="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
